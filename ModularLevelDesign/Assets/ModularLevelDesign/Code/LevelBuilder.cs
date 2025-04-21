@@ -23,6 +23,7 @@ namespace ProceduralLevelDesign {
         #region InternalData
 
         [SerializeField] protected List<Module> _allModulesInScene;
+        
 
         #endregion InternalData
 
@@ -54,7 +55,7 @@ namespace ProceduralLevelDesign {
             Debug.DrawRay(rayFromSceneCamera.origin, rayFromSceneCamera.direction * 10000f, Color.red, 5f);
             if (Physics.Raycast(rayFromSceneCamera, out raycastHit, 10000f))
             {
-                if (raycastHit.collider.gameObject.layer != 6)
+                if (raycastHit.collider.gameObject.layer != 3)
                 {
                     moduleInstance = raycastHit.collider.transform.parent.parent.gameObject;
                     _allModulesInScene.Remove(moduleInstance.GetComponent<Module>());
@@ -83,9 +84,20 @@ namespace ProceduralLevelDesign {
                     _allModulesInScene.Add(moduleInstance.GetComponent<Module>());
                 }
             }
-            
         }
-
         #endregion InterfaceMethods
+
+        //Create function for checking module sides
+        public bool ModuleSides(int x, int y)
+        {
+            foreach (Module module in _allModulesInScene)
+            {
+                if ((int)module.transform.position.x == x && (int)module.transform.position.z == y)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

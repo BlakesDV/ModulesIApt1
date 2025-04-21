@@ -31,7 +31,7 @@ namespace ProceduralLevelDesign {
             } 
             if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Backspace)//Delete / "Borrar"
             {
-                //TODO: Methos to delet a tile / module from the scene.
+                //TODO: Methods to delete a tile / module from the scene.
                 levelBuilder?.DeleteModule(e.mousePosition);
             }
             if (e.type == EventType.MouseUp && e.button == 0)

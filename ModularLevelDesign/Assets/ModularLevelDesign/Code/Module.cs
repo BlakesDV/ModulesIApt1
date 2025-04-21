@@ -25,27 +25,26 @@ namespace ProceduralLevelDesign
 
         }
 
+        private void OnDrawGizmos()
+        {
+            UpdateRender();
+        }
+
         public void UpdateRender()
         {
             floor = Instantiate(floorPrefab, floorPoint.position, Quaternion.identity, transform);
             
-            bool left = GridTool.Instance.ModuleSides(gridPos.x - 1, gridPos.y);
-            bool right = GridTool.Instance.ModuleSides(gridPos.x + 1, gridPos.y);
-            bool up = GridTool.Instance.ModuleSides(gridPos.x, gridPos.y + 1);
-            bool down = GridTool.Instance.ModuleSides(gridPos.x, gridPos.y - 1);
+            bool left = LevelBuilder.ModuleSides(gridPos.x - 1, gridPos.y);
+            bool right = LevelBuilder.Instance.ModuleSides(gridPos.x + 1, gridPos.y);
+            bool up = LevelBuilder.Instance.ModuleSides(gridPos.x, gridPos.y + 1);
+            bool down = LevelBuilder.Instance.ModuleSides(gridPos.x, gridPos.y - 1);
 
             //Renderer renderer = GetComponent<Renderer>();
 
             //Change the module depending on the side if its colliding or not
             //Check to know if there shoul be a corner, wall or floor depending on each side
-            if (!left)
-                wallLeft = Instantiate(wallPrefab, wallLeftPoint.position, wallLeftPoint.rotation, transform);
-            if (!right)
-                wallLeft = Instantiate(wallPrefab, wallRightPoint.position, wallRightPoint.rotation, transform);
-            if (!up)
-                wallLeft = Instantiate(wallPrefab, wallUpPoint.position, wallUpPoint.rotation, transform);
-            if (!down)
-                wallLeft = Instantiate(wallPrefab, wallDownPoint.position, wallDownPoint.rotation, transform);
+            //Deactivate walls if theres a neighbour
+            //If 3 neighbours pillar is off, if neighbours < 3 then pillar is on
         }
     }
 }

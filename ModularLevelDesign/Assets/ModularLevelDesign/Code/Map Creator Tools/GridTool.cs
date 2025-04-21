@@ -39,13 +39,6 @@ namespace ProceduralLevelDesign
             }
         }
 
-        //Create function for checking module sides
-        public bool ModuleSides(int x, int y)
-        {
-            if (x < 0 || y < 0 || x >= width || y >= height) return false;
-            return grid[x, y] != null;
-        }
-
         //Create function for checking if the module is inside the grid
         private bool IsInsideGrid(Vector2Int gridPos)
         {
@@ -56,7 +49,7 @@ namespace ProceduralLevelDesign
         {
             for (int dx = -1; dx <= 1; dx++)
             {
-                for(int dy = -1; dy <= 1; dy++)
+                for (int dy = -1; dy <= 1; dy++)
                 {
                     Vector2Int pos = center + new Vector2Int(dx, dy);
                     if (IsInsideGrid(pos) && grid[pos.x, pos.y] != null)
