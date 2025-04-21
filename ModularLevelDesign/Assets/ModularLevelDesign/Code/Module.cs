@@ -29,10 +29,10 @@ namespace ProceduralLevelDesign
         {
             floor = Instantiate(floorPrefab, floorPoint.position, Quaternion.identity, transform);
             
-            bool left = Grid.Instance.ModuleSides(gridPos.x - 1, gridPos.y);
-            bool right = Grid.Instance.ModuleSides(gridPos.x + 1, gridPos.y);
-            bool up = Grid.Instance.ModuleSides(gridPos.x, gridPos.y + 1);
-            bool down = Grid.Instance.ModuleSides(gridPos.x, gridPos.y - 1);
+            bool left = GridTool.Instance.ModuleSides(gridPos.x - 1, gridPos.y);
+            bool right = GridTool.Instance.ModuleSides(gridPos.x + 1, gridPos.y);
+            bool up = GridTool.Instance.ModuleSides(gridPos.x, gridPos.y + 1);
+            bool down = GridTool.Instance.ModuleSides(gridPos.x, gridPos.y - 1);
 
             //Renderer renderer = GetComponent<Renderer>();
 

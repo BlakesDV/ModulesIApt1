@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace ProceduralLevelDesign
 {
-    public class Grid : MonoBehaviour
+    public class GridTool : MonoBehaviour
     {
-        public static Grid Instance;
+        public static GridTool Instance;
         public int width = 10, height = 10;
         public float cellsize = 1f;
         public GameObject modulePrefab;
