@@ -18,43 +18,43 @@ namespace ProceduralLevelDesign
             grid = new GameObject[width, height];
         }
 
-        public Vector2Int GridWorldPos(Vector3 worldPos)
+        public Vector3 GridWorldPos(Vector3 worldPos)
         {
             int x = Mathf.RoundToInt(worldPos.x / cellsize);
             int y = Mathf.RoundToInt(worldPos.y / cellsize);
-            return new Vector2Int(x, y);
+            return new Vector3(x, 0, y);
         }
 
         public void PlaceModule(Vector3 worldPos)
         {
-            Vector2Int gridPos = GridWorldPos(worldPos);
+            Vector3 gridPos = GridWorldPos(worldPos);
             //If for placing the module inside the grid position
-            if (IsInsideGrid(gridPos) && grid[gridPos.x, gridPos.y] == null)
+            if (IsInsideGrid(gridPos) && grid[(int)gridPos.x, (int)gridPos.y] == null)
             {
-                Vector3 placePos = new Vector3(gridPos.x * cellsize, 0, gridPos.y * cellsize);
+                Vector3 placePos = new Vector3((int)gridPos.x * cellsize, 0, (int)gridPos.y * cellsize);
                 GameObject module = Instantiate(modulePrefab, placePos, Quaternion.identity);
-                grid[gridPos.x, gridPos.y] = module;
+                grid[(int)gridPos.x, (int)gridPos.y] = module;
                 module.GetComponent<Module>().SetPosition(gridPos);
                 UpdateNeighbours(gridPos);
             }
         }
 
         //Create function for checking if the module is inside the grid
-        private bool IsInsideGrid(Vector2Int gridPos)
+        private bool IsInsideGrid(Vector3 gridPos)
         {
-            return gridPos.x >= 0 && gridPos.y >= 0 && gridPos.x < width && gridPos.y < height;
+            return gridPos.x >= 0 && gridPos.z >= 0 && gridPos.x < width && gridPos.z < height;
         }
 
-        private void UpdateNeighbours(Vector2Int center)
+        private void UpdateNeighbours(Vector3 center)
         {
             for (int dx = -1; dx <= 1; dx++)
             {
                 for (int dy = -1; dy <= 1; dy++)
                 {
-                    Vector2Int pos = center + new Vector2Int(dx, dy);
-                    if (IsInsideGrid(pos) && grid[pos.x, pos.y] != null)
+                    Vector3 pos = center + new Vector3(dx, 0, dy);
+                    if (IsInsideGrid(pos) && grid[(int)pos.x, (int)pos.y] != null)
                     {
-                        grid[pos.x, pos.y].GetComponent<Module>().UpdateModules();
+                        grid[(int)pos.x, (int)pos.y].GetComponent<Module>().UpdateModules();
                     }
                 }
             }

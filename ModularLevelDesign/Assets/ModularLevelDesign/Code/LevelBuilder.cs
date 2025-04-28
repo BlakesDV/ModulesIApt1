@@ -2,7 +2,8 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
-namespace ProceduralLevelDesign {
+namespace ProceduralLevelDesign 
+{
     #region Interfaces
     public interface ILevelEditor
     {
@@ -33,6 +34,7 @@ namespace ProceduralLevelDesign {
         protected RaycastHit raycastHit;
         protected GameObject moduleInstance;
         protected Vector3 modulePosition;
+
 
         #endregion RuntimeVars
 
@@ -77,19 +79,26 @@ namespace ProceduralLevelDesign {
                     modulePosition.y = (int)modulePosition.y;
                     modulePosition.z = (int)modulePosition.z;
                     moduleInstance.transform.position = modulePosition;
+                    moduleInstance.GetComponent<Module>().GridPos = modulePosition;
 
+                    moduleInstance.GetComponent<Module>().SetLevelBuilder = this;
                     _allModulesInScene.Add(moduleInstance.GetComponent<Module>());
+
+                    foreach (Module module in _allModulesInScene)
+                    {
+                        module.GetComponent<Module>().UpdateModules();
+                    }
                 }
             }
         }
         #endregion InterfaceMethods
 
         //Create function for checking module sides
-        public bool ModuleSides(int x, int y)
+        public bool ModuleSides(int x, int z)
         {
             foreach (Module module in _allModulesInScene)
             {
-                if ((int)module.transform.position.x == x && (int)module.transform.position.z == y)
+                if ((int)module.GridPos.x == x && (int)module.GridPos.z == z)
                 {
                     return true;
                 }
