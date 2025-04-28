@@ -40,7 +40,6 @@ namespace ProceduralLevelDesign {
 
         public void ClearLevel() 
         {
-            //Debug.Log(this.name + " - " + gameObject.name + " ClearLevel()", gameObject); 
             foreach (Module module in transform.GetComponentsInChildren<Module>())
             {
                 DestroyImmediate(module.gameObject);
@@ -50,7 +49,6 @@ namespace ProceduralLevelDesign {
 
         public void DeleteModule(Vector2 value) 
         {
-            //Debug.Log(this.name + " - " + gameObject.name + " DeleteModule( " + value.ToString() + " )");
             rayFromSceneCamera = HandleUtility.GUIPointToWorldRay(value); //Camera.main.ScreenPointToRay(value)
             Debug.DrawRay(rayFromSceneCamera.origin, rayFromSceneCamera.direction * 10000f, Color.red, 5f);
             if (Physics.Raycast(rayFromSceneCamera, out raycastHit, 10000f))
@@ -66,7 +64,6 @@ namespace ProceduralLevelDesign {
 
         public void CreateModule(Vector2 value) 
         {
-            //Debug.Log(this.name + " - " + gameObject.name + " CreateModule( " + value.ToString() + " )");
             rayFromSceneCamera = HandleUtility.GUIPointToWorldRay(value); //Camera.main.ScreenPointToRay(value)
             Debug.DrawRay(rayFromSceneCamera.origin, rayFromSceneCamera.direction * 10000f, Color.green, 5f);
             if (Physics.Raycast(rayFromSceneCamera, out raycastHit, 10000f)) 

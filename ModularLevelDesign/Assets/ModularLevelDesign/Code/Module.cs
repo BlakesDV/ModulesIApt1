@@ -17,6 +17,8 @@ namespace ProceduralLevelDesign
 
         private GameObject wallLeft, wallRight, wallUp, wallDown, floor;
 
+        public LevelBuilder levelBuilder;
+
 
         public void SetPosition(Vector2Int pos)
         {
@@ -34,10 +36,10 @@ namespace ProceduralLevelDesign
         {
             floor = Instantiate(floorPrefab, floorPoint.position, Quaternion.identity, transform);
             
-            bool left = LevelBuilder.ModuleSides(gridPos.x - 1, gridPos.y);
-            bool right = LevelBuilder.Instance.ModuleSides(gridPos.x + 1, gridPos.y);
-            bool up = LevelBuilder.Instance.ModuleSides(gridPos.x, gridPos.y + 1);
-            bool down = LevelBuilder.Instance.ModuleSides(gridPos.x, gridPos.y - 1);
+            bool left = levelBuilder.ModuleSides(gridPos.x - 1, gridPos.y);
+            bool right = levelBuilder.ModuleSides(gridPos.x + 1, gridPos.y);
+            bool up = levelBuilder.ModuleSides(gridPos.x, gridPos.y + 1);
+            bool down = levelBuilder.ModuleSides(gridPos.x, gridPos.y - 1);
 
             //Renderer renderer = GetComponent<Renderer>();
 
