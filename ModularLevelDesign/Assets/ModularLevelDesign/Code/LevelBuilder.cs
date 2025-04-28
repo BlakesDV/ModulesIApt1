@@ -73,7 +73,7 @@ namespace ProceduralLevelDesign {
                     moduleInstance = Instantiate(_modulePrefab);
                     moduleInstance.transform.parent = transform;
                     modulePosition = raycastHit.point;
-                    modulePosition.x = (int)modulePosition.x - 1.0f;
+                    modulePosition.x = (int)modulePosition.x;
                     modulePosition.y = (int)modulePosition.y;
                     modulePosition.z = (int)modulePosition.z;
                     moduleInstance.transform.position = modulePosition;

@@ -54,7 +54,7 @@ namespace ProceduralLevelDesign
                     Vector2Int pos = center + new Vector2Int(dx, dy);
                     if (IsInsideGrid(pos) && grid[pos.x, pos.y] != null)
                     {
-                        grid[pos.x, pos.y].GetComponent<Module>().UpdateRender();
+                        grid[pos.x, pos.y].GetComponent<Module>().UpdateModules();
                     }
                 }
             }
