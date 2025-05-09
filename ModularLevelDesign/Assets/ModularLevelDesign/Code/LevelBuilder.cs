@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using static ProceduralLevelDesign.Module;
 
 namespace ProceduralLevelDesign 
 {
@@ -18,6 +19,8 @@ namespace ProceduralLevelDesign
         #region Parameters
 
         [SerializeField] GameObject _modulePrefab;
+        [SerializeField] protected int minDungeonX;
+        [SerializeField] protected int minDungeonY;
 
         #endregion Parameters
 
@@ -37,6 +40,30 @@ namespace ProceduralLevelDesign
 
 
         #endregion RuntimeVars
+
+        #region Structs
+        [SerializeField]
+        public struct Dungeon
+        {
+            public int minX;
+            public int minY;
+            public int maxX;
+            public int maxY;
+
+            public bool isSliceableOnX;
+            public bool isSliceableOnY;
+
+            public int Width()
+            {
+                return maxX - minX;
+            }
+            public int Height()
+            {
+                return maxY - minY;
+            }
+        }
+
+        #endregion
 
         #region InterfaceMethods
 
@@ -61,6 +88,10 @@ namespace ProceduralLevelDesign
                     _allModulesInScene.Remove(moduleInstance.GetComponent<Module>());
                     DestroyImmediate(moduleInstance);
                 }
+            }
+            foreach (Module module in _allModulesInScene)
+            {
+                module.GetComponent<Module>().UpdateModules();
             }
         }
 
@@ -104,6 +135,42 @@ namespace ProceduralLevelDesign
                 }
             }
             return false;
+        }
+
+        //Create void binary space partition
+        private void BinarySpacePartition(Dungeon dungeon)
+        {
+            if (dungeon.Width() * 2 > minDungeonX)
+            {
+                dungeon.isSliceableOnX = true;
+            }
+            if (dungeon.Height() * 2 > minDungeonY)
+            {
+                dungeon.isSliceableOnY = true;
+            }
+            if (!dungeon.isSliceableOnY && !dungeon.isSliceableOnX)
+            {
+                return;
+            }
+
+            if (dungeon.isSliceableOnX && !dungeon.isSliceableOnY)
+            {
+                int cutter = Random.Range(dungeon.minX + minDungeonX + 1, dungeon.maxX - minDungeonX - 1);
+                //for (int i = dungeon.minY; i <= dungeon.maxY; i++)
+                //{
+                //    GridTool[cutter, i].gameObject.SetActive(false);
+                //}
+                foreach (Module module in _allModulesInScene)
+                {
+                    //if (module.ModulePos.x == cutter)
+                    //{
+                    //    if(module.ModulePos.z >= dungeon.minY && module.ModulePos.z <= dungeon.maxY)
+                    //    {
+                    //        module.gameObject.SetActive(false);
+                    //    }
+                    //}
+                }
+            }
         }
     }
 }

@@ -16,7 +16,6 @@ namespace ProceduralLevelDesign
 
         [SerializeField] private LevelBuilder levelBuilder;
 
-
         public void SetPosition(Vector3 pos)
         {
             gridPos = pos;
@@ -62,6 +61,10 @@ namespace ProceduralLevelDesign
             bool northeast = levelBuilder.ModuleSides((int)gridPos.x + 1, (int)gridPos.z + 1);//NE
             bool southeast = levelBuilder.ModuleSides((int)gridPos.x + 1, (int)gridPos.z - 1);//SE
 
+            pillarNL.SetActive(!(up && left && northwest));
+            pillarNR.SetActive(!(up && right && northeast));
+            pillarSL.SetActive(!(down && left && southwest));
+            pillarSR.SetActive(!(down && right && southeast));
         }
 
         public LevelBuilder SetLevelBuilder
@@ -73,6 +76,6 @@ namespace ProceduralLevelDesign
         {
             get { return gridPos; }
             set { gridPos = value; }
-        }
+        }        
     }
 }
