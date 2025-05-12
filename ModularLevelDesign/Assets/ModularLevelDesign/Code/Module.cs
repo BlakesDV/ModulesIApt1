@@ -14,12 +14,12 @@ namespace ProceduralLevelDesign
 
         private GameObject floor;
 
-        [SerializeField] private LevelBuilder levelBuilder;
+        [SerializeField] public LevelBuilder levelBuilder;
 
         public void SetPosition(Vector3 pos)
         {
             gridPos = pos;
-            //UpdateModules();
+            UpdateModules();
         }
 
         public void UpdateModules()
@@ -45,7 +45,7 @@ namespace ProceduralLevelDesign
             wallDown.SetActive(down);
             wallRight.SetActive(right);
             wallUp.SetActive(up);
-          
+
         }
         
         public void UpdatePillars()
@@ -61,10 +61,10 @@ namespace ProceduralLevelDesign
             bool northeast = levelBuilder.ModuleSides((int)gridPos.x + 1, (int)gridPos.z + 1);//NE
             bool southeast = levelBuilder.ModuleSides((int)gridPos.x + 1, (int)gridPos.z - 1);//SE
 
-            pillarNL.SetActive(!(up && left && northwest));
-            pillarNR.SetActive(!(up && right && northeast));
-            pillarSL.SetActive(!(down && left && southwest));
-            pillarSR.SetActive(!(down && right && southeast));
+            pillarNL.SetActive(!(down && right && northwest));
+            pillarNR.SetActive(!(down && left && northeast));
+            pillarSL.SetActive(!(up && right && southeast));
+            pillarSR.SetActive(!(up && left && southwest));
         }
 
         public LevelBuilder SetLevelBuilder

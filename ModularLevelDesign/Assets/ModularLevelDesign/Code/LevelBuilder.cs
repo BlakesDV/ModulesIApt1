@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using static ProceduralLevelDesign.Module;
+using UnityEngine.UIElements;
 
 namespace ProceduralLevelDesign 
 {
@@ -14,6 +15,30 @@ namespace ProceduralLevelDesign
     }
     #endregion Interfaces
 
+    #region Structs
+    [SerializeField]
+    public struct Dungeon
+    {
+        public int minX;
+        public int minY;
+        public int maxX;
+        public int maxY;
+
+        public bool isSliceableOnX;
+        public bool isSliceableOnY;
+
+        public int Width()
+        {
+            return maxX - minX;
+        }
+        public int Height()
+        {
+            return maxY - minY;
+        }
+    }
+
+    #endregion
+
     public class LevelBuilder : MonoBehaviour, ILevelEditor
     {
         #region Parameters
@@ -21,13 +46,15 @@ namespace ProceduralLevelDesign
         [SerializeField] GameObject _modulePrefab;
         [SerializeField] protected int minDungeonX;
         [SerializeField] protected int minDungeonY;
+        public int sizeX = 1, sizeZ = 1;
+        [SerializeField] private Vector3 gridPos;
 
         #endregion Parameters
 
         #region InternalData
 
         [SerializeField] protected List<Module> _allModulesInScene;
-        
+        [SerializeField] protected Module[,] _bidimentionalGrid;
 
         #endregion InternalData
 
@@ -40,30 +67,6 @@ namespace ProceduralLevelDesign
 
 
         #endregion RuntimeVars
-
-        #region Structs
-        [SerializeField]
-        public struct Dungeon
-        {
-            public int minX;
-            public int minY;
-            public int maxX;
-            public int maxY;
-
-            public bool isSliceableOnX;
-            public bool isSliceableOnY;
-
-            public int Width()
-            {
-                return maxX - minX;
-            }
-            public int Height()
-            {
-                return maxY - minY;
-            }
-        }
-
-        #endregion
 
         #region InterfaceMethods
 
@@ -135,6 +138,63 @@ namespace ProceduralLevelDesign
                 }
             }
             return false;
+        }
+
+        public void CreateGrid()
+        {
+            Vector3 startPos = transform.position - new Vector3(0, 0, 0);
+            //_bidimentionalGrid = new Module[sizeX, sizeZ];
+            for (int x = 0; x < sizeX; x++)
+            {
+                for (int z = 0; z < sizeZ; z++)
+                {
+                    Vector3 modulePos = startPos + new Vector3(x, 0, z);
+                    moduleInstance = Instantiate(_modulePrefab, modulePos, Quaternion.identity);
+                    moduleInstance.transform.parent = this.transform.GetChild(0);
+                    //moduleInstance.transform.position = new Vector3(x, 0, z);
+                    //moduleInstance.GetComponent<Module>().SetPosition(gridPos);
+                    moduleInstance.GetComponent<Module>().levelBuilder = this;
+                    moduleInstance.GetComponent<Module>().SetPosition(modulePos);
+                    _allModulesInScene.Add(moduleInstance.GetComponent<Module>());
+
+                    //_bidimentionalGrid[x, z] = moduleInstance.GetComponent<Module>();
+                    //_allModulesInScene.Add(moduleInstance.GetComponent<Module>());
+                }
+            }
+            foreach (Module module in _allModulesInScene)
+            {
+                module.GetComponent<Module>().UpdateModules();
+            }
+        }
+
+        public void DisableAllModules()
+        {
+            foreach (Module module in transform.GetChild(0).GetComponentsInChildren<Module>())
+            {
+                //module.VisibilityOfTheModule(Visibility.OFF);
+            }
+        }
+
+        public Module ModuleAtMatrixPosition(int x, int z)
+        {
+            if (x < 0 || z < 0) { return null; }
+            if (x >= sizeX || z >= sizeZ) { return null; }
+            return _bidimentionalGrid[x, z];
+        }
+
+        public void CheckNeighbours()
+        {
+            foreach (Module module in transform.GetChild(0).GetComponentsInChildren<Module>())
+            {
+                //if (module._currentVisibility == Visibility.ON)
+                //{
+                //    module.UpdateModules();
+                //}
+            }
+        }
+        public void BPS()
+        {
+
         }
 
         //Create void binary space partition

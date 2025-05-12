@@ -31,7 +31,7 @@ namespace ProceduralLevelDesign
             //If for placing the module inside the grid position
             if (IsInsideGrid(gridPos) && grid[(int)gridPos.x, (int)gridPos.y] == null)
             {
-                Vector3 placePos = new Vector3((int)gridPos.x * cellsize, 0, (int)gridPos.y * cellsize);
+                Vector3 placePos = new Vector3((int)gridPos.x * cellsize, 0, (int)gridPos.z * cellsize);
                 GameObject module = Instantiate(modulePrefab, placePos, Quaternion.identity);
                 grid[(int)gridPos.x, (int)gridPos.y] = module;
                 module.GetComponent<Module>().SetPosition(gridPos);
