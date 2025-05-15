@@ -18,45 +18,51 @@ namespace ProceduralLevelDesign
             grid = new GameObject[width, height];
         }
 
-        public Vector3 GridWorldPos(Vector3 worldPos)
+        public void CreateGrid()
         {
-            int x = Mathf.RoundToInt(worldPos.x / cellsize);
-            int y = Mathf.RoundToInt(worldPos.y / cellsize);
-            return new Vector3(x, 0, y);
-        }
-
-        public void PlaceModule(Vector3 worldPos)
-        {
-            Vector3 gridPos = GridWorldPos(worldPos);
-            //If for placing the module inside the grid position
-            if (IsInsideGrid(gridPos) && grid[(int)gridPos.x, (int)gridPos.y] == null)
+            Vector3 startPos = transform.position;
+            for (int x = 0; x < width; x++)
             {
-                Vector3 placePos = new Vector3((int)gridPos.x * cellsize, 0, (int)gridPos.z * cellsize);
-                GameObject module = Instantiate(modulePrefab, placePos, Quaternion.identity);
-                grid[(int)gridPos.x, (int)gridPos.y] = module;
-                module.GetComponent<Module>().SetPosition(gridPos);
-                UpdateNeighbours(gridPos);
+                for (int z = 0; z < height; z++)
+                {
+                    Vector3 modulePos = startPos + new Vector3(x * cellsize, 0, z * cellsize);
+                    GameObject module = Instantiate(modulePrefab, modulePos, Quaternion.identity);
+                    module.transform.parent = this.transform;
+
+                    Module moduleComponent = module.GetComponent<Module>();
+                    moduleComponent.SetPosition(new Vector3(x, 0, z));
+
+                    grid[x, z] = module;
+                }
+            }
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int z = 0; z < height; z++)
+                {
+                    if (grid[x, z] != null)
+                    {
+                        grid[x, z].GetComponent<Module>().UpdateModules();
+                    }
+                }
             }
         }
 
-        //Create function for checking if the module is inside the grid
-        private bool IsInsideGrid(Vector3 gridPos)
+        public GameObject GetModuleAt(int x, int z)
         {
-            return gridPos.x >= 0 && gridPos.z >= 0 && gridPos.x < width && gridPos.z < height;
+            if (x >= 0 && z >= 0 && x < width && z < height)
+            {
+                return grid[x, z];
+            }
+            return null;
         }
 
-        private void UpdateNeighbours(Vector3 center)
+        public void DisableModuleAt(int x, int z)
         {
-            for (int dx = -1; dx <= 1; dx++)
+            GameObject module = GetModuleAt(x, z);
+            if (module != null)
             {
-                for (int dy = -1; dy <= 1; dy++)
-                {
-                    Vector3 pos = center + new Vector3(dx, 0, dy);
-                    if (IsInsideGrid(pos) && grid[(int)pos.x, (int)pos.y] != null)
-                    {
-                        grid[(int)pos.x, (int)pos.y].GetComponent<Module>().UpdateModules();
-                    }
-                }
+                module.SetActive(false);
             }
         }
     }

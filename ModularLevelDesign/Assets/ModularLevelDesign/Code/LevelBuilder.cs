@@ -140,10 +140,22 @@ namespace ProceduralLevelDesign
             return false;
         }
 
+        public Module GetModuleAt(int x, int z)
+        {
+            foreach (Module module in _allModulesInScene)
+            {
+                if ((int)module.GridPos.x == x && (int)module.GridPos.z == z)
+                {
+                    return module;
+                }
+            }
+            return null;
+        }
+
         public void CreateGrid()
         {
             Vector3 startPos = transform.position - new Vector3(0, 0, 0);
-            //_bidimentionalGrid = new Module[sizeX, sizeZ];
+            _bidimentionalGrid = new Module[sizeX, sizeZ];
             for (int x = 0; x < sizeX; x++)
             {
                 for (int z = 0; z < sizeZ; z++)
@@ -216,20 +228,21 @@ namespace ProceduralLevelDesign
             if (dungeon.isSliceableOnX && !dungeon.isSliceableOnY)
             {
                 int cutter = Random.Range(dungeon.minX + minDungeonX + 1, dungeon.maxX - minDungeonX - 1);
-                //for (int i = dungeon.minY; i <= dungeon.maxY; i++)
-                //{
-                //    GridTool[cutter, i].gameObject.SetActive(false);
-                //}
-                foreach (Module module in _allModulesInScene)
+                for (int i = dungeon.minY; i <= dungeon.maxY; i++)
                 {
-                    //if (module.ModulePos.x == cutter)
-                    //{
-                    //    if(module.ModulePos.z >= dungeon.minY && module.ModulePos.z <= dungeon.maxY)
-                    //    {
-                    //        module.gameObject.SetActive(false);
-                    //    }
-                    //}
+                    GetModuleAt(cutter, i)?.gameObject.SetActive(false);
                 }
+                CheckNeighbours();
+                //foreach (Module module in _allModulesInScene)
+                //{
+                //    //if (module.ModulePos.x == cutter)
+                //    //{
+                //    //    if (module.ModulePos.z >= dungeon.minY && module.ModulePos.z <= dungeon.maxY)
+                //    //    {
+                //    //        module.gameObject.SetActive(false);
+                //    //    }
+                //    //}
+                //}
             }
         }
     }

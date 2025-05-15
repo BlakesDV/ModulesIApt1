@@ -56,15 +56,15 @@ namespace ProceduralLevelDesign
             bool right = levelBuilder.ModuleSides((int)gridPos.x + 1, (int)gridPos.z); //East
             bool up = levelBuilder.ModuleSides((int)gridPos.x, (int)gridPos.z + 1); //North
             bool down = levelBuilder.ModuleSides((int)gridPos.x, (int)gridPos.z - 1); //South
-            bool northwest = levelBuilder.ModuleSides((int)gridPos.x - 1, (int)gridPos.z +1);//NW
-            bool southwest = levelBuilder.ModuleSides((int)gridPos.x - 1, (int)gridPos.z - 1);//SW
-            bool northeast = levelBuilder.ModuleSides((int)gridPos.x + 1, (int)gridPos.z + 1);//NE
-            bool southeast = levelBuilder.ModuleSides((int)gridPos.x + 1, (int)gridPos.z - 1);//SE
+            bool leftup = levelBuilder.ModuleSides((int)gridPos.x - 1, (int)gridPos.z +1);//NW
+            bool leftdown = levelBuilder.ModuleSides((int)gridPos.x - 1, (int)gridPos.z - 1);//SW
+            bool rightup = levelBuilder.ModuleSides((int)gridPos.x + 1, (int)gridPos.z + 1);//NE
+            bool rightdown = levelBuilder.ModuleSides((int)gridPos.x + 1, (int)gridPos.z - 1);//SE
 
-            pillarNL.SetActive(!(down && right && northwest));
-            pillarNR.SetActive(!(down && left && northeast));
-            pillarSL.SetActive(!(up && right && southeast));
-            pillarSR.SetActive(!(up && left && southwest));
+            pillarNL.SetActive(!(down && right && rightdown));
+            pillarNR.SetActive(!(down && left && leftdown));
+            pillarSL.SetActive(!(up && right && rightup));
+            pillarSR.SetActive(!(up && left && leftup));
         }
 
         public LevelBuilder SetLevelBuilder
