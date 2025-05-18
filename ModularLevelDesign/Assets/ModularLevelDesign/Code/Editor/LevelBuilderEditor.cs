@@ -22,7 +22,27 @@ public class LevelBuilderEditor : Editor
         }
         if (GUILayout.Button("BSP"))
         {
-            _levelBuilder.BPS();
+
+            Dungeon dungeon = new Dungeon()
+            {
+                minX = 0,
+                minY = 0,
+                maxX = _levelBuilder.sizeX,
+                maxY = _levelBuilder.sizeZ,
+            };
+
+            _levelBuilder.BinarySpacePartition(dungeon);
         }
+
+        if (GUILayout.Button("Check Neighbours"))
+        {
+            _levelBuilder.CheckNeighbours();
+        }
+
+        if (GUILayout.Button("Delete Modules"))
+        {
+            _levelBuilder.DeleteAllModules();
+        }
+
     }
 }

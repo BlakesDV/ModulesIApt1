@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using static ProceduralLevelDesign.Module;
 using UnityEngine.UIElements;
 
-namespace ProceduralLevelDesign 
+namespace ProceduralLevelDesign
 {
     #region Interfaces
     public interface ILevelEditor
@@ -53,7 +53,7 @@ namespace ProceduralLevelDesign
 
         #region InternalData
 
-        [SerializeField] protected List<Module> _allModulesInScene;
+        [SerializeField] public List<Module> _allModulesInScene;
         [SerializeField] protected Module[,] _bidimentionalGrid;
 
         #endregion InternalData
@@ -70,7 +70,7 @@ namespace ProceduralLevelDesign
 
         #region InterfaceMethods
 
-        public void ClearLevel() 
+        public void ClearLevel()
         {
             foreach (Module module in transform.GetComponentsInChildren<Module>())
             {
@@ -79,7 +79,7 @@ namespace ProceduralLevelDesign
             _allModulesInScene.Clear();
         }
 
-        public void DeleteModule(Vector2 value) 
+        public void DeleteModule(Vector2 value)
         {
             rayFromSceneCamera = HandleUtility.GUIPointToWorldRay(value); //Camera.main.ScreenPointToRay(value)
             Debug.DrawRay(rayFromSceneCamera.origin, rayFromSceneCamera.direction * 10000f, Color.red, 5f);
@@ -98,11 +98,11 @@ namespace ProceduralLevelDesign
             }
         }
 
-        public void CreateModule(Vector2 value) 
+        public void CreateModule(Vector2 value)
         {
             rayFromSceneCamera = HandleUtility.GUIPointToWorldRay(value); //Camera.main.ScreenPointToRay(value)
             Debug.DrawRay(rayFromSceneCamera.origin, rayFromSceneCamera.direction * 10000f, Color.green, 5f);
-            if (Physics.Raycast(rayFromSceneCamera, out raycastHit, 10000f)) 
+            if (Physics.Raycast(rayFromSceneCamera, out raycastHit, 10000f))
             {
                 if (raycastHit.collider.gameObject.layer == 6) //Layer -> Layout
                 {
@@ -134,7 +134,7 @@ namespace ProceduralLevelDesign
             {
                 if ((int)module.GridPos.x == x && (int)module.GridPos.z == z)
                 {
-                    return true;
+                    return module.IsActive;
                 }
             }
             return false;
@@ -173,10 +173,21 @@ namespace ProceduralLevelDesign
                     //_allModulesInScene.Add(moduleInstance.GetComponent<Module>());
                 }
             }
+            CheckNeighbours();
+        }
+
+        public void DeleteAllModules()
+        {
             foreach (Module module in _allModulesInScene)
             {
-                module.GetComponent<Module>().UpdateModules();
+                module.gameObject.SetActive(true);
             }
+
+            foreach (Module module in transform.GetComponentsInChildren<Module>())
+            {
+                DestroyImmediate(module.gameObject);
+            }
+            _allModulesInScene.Clear();
         }
 
         public void DisableAllModules()
@@ -196,27 +207,24 @@ namespace ProceduralLevelDesign
 
         public void CheckNeighbours()
         {
-            foreach (Module module in transform.GetChild(0).GetComponentsInChildren<Module>())
+            Debug.Log("Checking Neighbours");
+            foreach (Module module in _allModulesInScene)
             {
-                //if (module._currentVisibility == Visibility.ON)
-                //{
-                //    module.UpdateModules();
-                //}
+                if (module.IsActive)
+                {
+                    module.UpdateModules();
+                }
             }
-        }
-        public void BPS()
-        {
-
         }
 
         //Create void binary space partition
-        private void BinarySpacePartition(Dungeon dungeon)
+        public void BinarySpacePartition(Dungeon dungeon)
         {
-            if (dungeon.Width() * 2 > minDungeonX)
+            if (dungeon.Width() > minDungeonX * 2)
             {
                 dungeon.isSliceableOnX = true;
             }
-            if (dungeon.Height() * 2 > minDungeonY)
+            if (dungeon.Height() > minDungeonY * 2)
             {
                 dungeon.isSliceableOnY = true;
             }
@@ -225,24 +233,90 @@ namespace ProceduralLevelDesign
                 return;
             }
 
+            if (dungeon.isSliceableOnY && dungeon.isSliceableOnX)
+            {
+                dungeon.isSliceableOnX = Random.Range(0, 2) == 0;
+                dungeon.isSliceableOnY = !dungeon.isSliceableOnX;
+            }
+
+            //Cortes en en Y sobre eje X
             if (dungeon.isSliceableOnX && !dungeon.isSliceableOnY)
             {
                 int cutter = Random.Range(dungeon.minX + minDungeonX + 1, dungeon.maxX - minDungeonX - 1);
-                for (int i = dungeon.minY; i <= dungeon.maxY; i++)
-                {
-                    GetModuleAt(cutter, i)?.gameObject.SetActive(false);
-                }
-                CheckNeighbours();
-                //foreach (Module module in _allModulesInScene)
+
+                //for (int i = dungeon.minY; i <= dungeon.maxY; i++)
                 //{
-                //    //if (module.ModulePos.x == cutter)
-                //    //{
-                //    //    if (module.ModulePos.z >= dungeon.minY && module.ModulePos.z <= dungeon.maxY)
-                //    //    {
-                //    //        module.gameObject.SetActive(false);
-                //    //    }
-                //    //}
+                //    GetModuleAt(cutter, i)?.gameObject.SetActive(false);
                 //}
+                foreach (Module module in _allModulesInScene)
+                {
+                    if (module.GridPos.x == cutter)
+                    {
+                        if (module.GridPos.z >= dungeon.minY && module.GridPos.z <= dungeon.maxY)
+                        {
+                            module.SetActive(false);
+                        }
+                    }
+                }
+
+                Dungeon DungeonA = new Dungeon()
+                {
+                    minX = dungeon.minX,
+                    maxX = cutter - 1,
+                    minY = dungeon.minY,
+                    maxY = dungeon.maxY
+                };
+
+                Dungeon DungeonB = new Dungeon()
+                {
+                    minX = cutter + 1,
+                    maxX = dungeon.maxX,
+                    minY = dungeon.minY,
+                    maxY = dungeon.maxY
+                };
+
+                BinarySpacePartition(DungeonA);
+                BinarySpacePartition(DungeonB);
+            }
+
+            //Cortes en en X sobre eje Y
+            else if (!dungeon.isSliceableOnX && dungeon.isSliceableOnY)
+            {
+                int cutter = Random.Range(dungeon.minY + minDungeonY + 1, dungeon.maxY - minDungeonY - 1);
+
+                //for (int i = dungeon.minY; i <= dungeon.maxY; i++)
+                //{
+                //    GetModuleAt(cutter, i)?.gameObject.SetActive(false);
+                //}
+                foreach (Module module in _allModulesInScene)
+                {
+                    if (module.GridPos.z == cutter)
+                    {
+                        if (module.GridPos.x >= dungeon.minX && module.GridPos.x <= dungeon.maxX)
+                        {
+                            module.SetActive(false);
+                        }
+                    }
+                }
+
+                Dungeon DungeonA = new Dungeon()
+                {
+                    minX = dungeon.minX,
+                    maxX = dungeon.maxX,
+                    minY = dungeon.minY,
+                    maxY = cutter - 1,
+                };
+
+                Dungeon DungeonB = new Dungeon()
+                {
+                    minX = dungeon.minX,
+                    maxX = dungeon.maxX,
+                    minY = cutter + 1,
+                    maxY = dungeon.maxY
+                };
+
+                BinarySpacePartition(DungeonA);
+                BinarySpacePartition(DungeonB);
             }
         }
     }

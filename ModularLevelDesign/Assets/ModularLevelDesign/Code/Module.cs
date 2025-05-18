@@ -15,6 +15,13 @@ namespace ProceduralLevelDesign
         private GameObject floor;
 
         [SerializeField] public LevelBuilder levelBuilder;
+        public bool IsActive { get; private set; } = true;
+
+        public void SetActive(bool value)
+        {
+            IsActive = value;
+            gameObject.SetActive(value);
+        }
 
         public void SetPosition(Vector3 pos)
         {
@@ -45,7 +52,6 @@ namespace ProceduralLevelDesign
             wallDown.SetActive(down);
             wallRight.SetActive(right);
             wallUp.SetActive(up);
-
         }
         
         public void UpdatePillars()
