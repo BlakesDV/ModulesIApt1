@@ -3,6 +3,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using static ProceduralLevelDesign.Module;
 using UnityEngine.UIElements;
+using System.Linq;
 
 namespace ProceduralLevelDesign
 {
@@ -55,6 +56,7 @@ namespace ProceduralLevelDesign
 
         [SerializeField] public List<Module> _allModulesInScene;
         [SerializeField] protected Module[,] _bidimentionalGrid;
+        [SerializeField] public List<Module> availableModules = new List<Module>();
 
         #endregion InternalData
 
@@ -188,6 +190,7 @@ namespace ProceduralLevelDesign
                 DestroyImmediate(module.gameObject);
             }
             _allModulesInScene.Clear();
+            availableModules.Clear();
         }
 
         public void DisableAllModules()
@@ -255,6 +258,7 @@ namespace ProceduralLevelDesign
                         if (module.GridPos.z >= dungeon.minY && module.GridPos.z <= dungeon.maxY)
                         {
                             module.SetActive(false);
+                            availableModules.Add(module);
                         }
                     }
                 }
@@ -295,6 +299,7 @@ namespace ProceduralLevelDesign
                         if (module.GridPos.x >= dungeon.minX && module.GridPos.x <= dungeon.maxX)
                         {
                             module.SetActive(false);
+                            availableModules.Add(module);
                         }
                     }
                 }
@@ -318,6 +323,33 @@ namespace ProceduralLevelDesign
                 BinarySpacePartition(DungeonA);
                 BinarySpacePartition(DungeonB);
             }
+            CheckNeighbours();
+            //SpawnHall();
+        }
+        public void SpawnHall()
+        {
+            List<Module> validCandidates = new List<Module>();
+
+            foreach (Module module in availableModules)
+            {
+                bool hasUp = GetModuleAt((int)module.GridPos.x, (int)module.GridPos.z + 1)?.IsActive == true;
+                bool hasDown = GetModuleAt((int)module.GridPos.x, (int)module.GridPos.z - 1)?.IsActive == true;
+                bool hasLeft = GetModuleAt((int)module.GridPos.x - 1, (int)module.GridPos.z)?.IsActive == true;
+                bool hasRight = GetModuleAt((int)module.GridPos.x + 1, (int)module.GridPos.z)?.IsActive == true;
+                if ((hasUp && hasDown) || (hasLeft && hasRight))
+                {
+                    validCandidates.Add(module);
+                }
+            }
+            //TODO: Que haga multiples? Que conecte los dungeons?
+            if (validCandidates.Count == 0)
+            {
+                Debug.Log("No");
+                return;
+            }
+            Module selected = validCandidates[Random.Range(0, validCandidates.Count)];
+            selected.SetActive(true);
+            availableModules.Remove(selected);
         }
     }
 }

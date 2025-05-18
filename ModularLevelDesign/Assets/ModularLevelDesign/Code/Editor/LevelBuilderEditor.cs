@@ -39,6 +39,11 @@ public class LevelBuilderEditor : Editor
             _levelBuilder.CheckNeighbours();
         }
 
+        if (GUILayout.Button("Create Hall"))
+        {
+            _levelBuilder.SpawnHall();
+        }
+
         if (GUILayout.Button("Delete Modules"))
         {
             _levelBuilder.DeleteAllModules();
