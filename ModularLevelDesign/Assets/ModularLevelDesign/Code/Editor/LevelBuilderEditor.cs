@@ -41,7 +41,7 @@ public class LevelBuilderEditor : Editor
 
         if (GUILayout.Button("Create Hall"))
         {
-            _levelBuilder.SpawnHall();
+            //_levelBuilder.SpawnHall();
         }
 
         if (GUILayout.Button("Delete Modules"))

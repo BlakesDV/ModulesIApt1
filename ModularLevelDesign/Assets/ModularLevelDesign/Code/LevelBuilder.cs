@@ -1,9 +1,6 @@
-using UnityEngine;
-using UnityEditor;
 using System.Collections.Generic;
-using static ProceduralLevelDesign.Module;
-using UnityEngine.UIElements;
-using System.Linq;
+using UnityEditor;
+using UnityEngine;
 
 namespace ProceduralLevelDesign
 {
@@ -57,6 +54,7 @@ namespace ProceduralLevelDesign
         [SerializeField] public List<Module> _allModulesInScene;
         [SerializeField] protected Module[,] _bidimentionalGrid;
         [SerializeField] public List<Module> availableModules = new List<Module>();
+        [SerializeField] public List<Module> validCandidates;
 
         #endregion InternalData
 
@@ -246,7 +244,7 @@ namespace ProceduralLevelDesign
             if (dungeon.isSliceableOnX && !dungeon.isSliceableOnY)
             {
                 int cutter = Random.Range(dungeon.minX + minDungeonX + 1, dungeon.maxX - minDungeonX - 1);
-
+                List<Module> validCandidates = new List<Module>();
                 //for (int i = dungeon.minY; i <= dungeon.maxY; i++)
                 //{
                 //    GetModuleAt(cutter, i)?.gameObject.SetActive(false);
@@ -259,8 +257,16 @@ namespace ProceduralLevelDesign
                         {
                             module.SetActive(false);
                             availableModules.Add(module);
+                            validCandidates.Add(module);
                         }
                     }
+                }
+
+                if (validCandidates.Count > 0)
+                {
+                    Module connector = validCandidates[Random.Range(0, validCandidates.Count)];
+                    connector.SetActive(true);
+                    availableModules.Remove(connector);
                 }
 
                 Dungeon DungeonA = new Dungeon()
@@ -287,6 +293,7 @@ namespace ProceduralLevelDesign
             else if (!dungeon.isSliceableOnX && dungeon.isSliceableOnY)
             {
                 int cutter = Random.Range(dungeon.minY + minDungeonY + 1, dungeon.maxY - minDungeonY - 1);
+                List<Module> validCandidates = new List<Module>();
 
                 //for (int i = dungeon.minY; i <= dungeon.maxY; i++)
                 //{
@@ -300,8 +307,16 @@ namespace ProceduralLevelDesign
                         {
                             module.SetActive(false);
                             availableModules.Add(module);
+                            validCandidates.Add(module);
                         }
                     }
+                }
+
+                if (validCandidates.Count > 0)
+                {
+                    Module connector = validCandidates[Random.Range(0, validCandidates.Count)];
+                    connector.SetActive(true);
+                    availableModules.Remove(connector);
                 }
 
                 Dungeon DungeonA = new Dungeon()
@@ -326,30 +341,30 @@ namespace ProceduralLevelDesign
             CheckNeighbours();
             //SpawnHall();
         }
-        public void SpawnHall()
-        {
-            List<Module> validCandidates = new List<Module>();
+        //public void SpawnHall()
+        //{
+        //    List<Module> validCandidates = new List<Module>();
 
-            foreach (Module module in availableModules)
-            {
-                bool hasUp = GetModuleAt((int)module.GridPos.x, (int)module.GridPos.z + 1)?.IsActive == true;
-                bool hasDown = GetModuleAt((int)module.GridPos.x, (int)module.GridPos.z - 1)?.IsActive == true;
-                bool hasLeft = GetModuleAt((int)module.GridPos.x - 1, (int)module.GridPos.z)?.IsActive == true;
-                bool hasRight = GetModuleAt((int)module.GridPos.x + 1, (int)module.GridPos.z)?.IsActive == true;
-                if ((hasUp && hasDown) || (hasLeft && hasRight))
-                {
-                    validCandidates.Add(module);
-                }
-            }
-            //TODO: Que haga multiples? Que conecte los dungeons?
-            if (validCandidates.Count == 0)
-            {
-                Debug.Log("No");
-                return;
-            }
-            Module selected = validCandidates[Random.Range(0, validCandidates.Count)];
-            selected.SetActive(true);
-            availableModules.Remove(selected);
-        }
+        //    foreach (Module module in availableModules)
+        //    {
+        //        bool hasUp = GetModuleAt((int)module.GridPos.x, (int)module.GridPos.z + 1)?.IsActive == true;
+        //        bool hasDown = GetModuleAt((int)module.GridPos.x, (int)module.GridPos.z - 1)?.IsActive == true;
+        //        bool hasLeft = GetModuleAt((int)module.GridPos.x - 1, (int)module.GridPos.z)?.IsActive == true;
+        //        bool hasRight = GetModuleAt((int)module.GridPos.x + 1, (int)module.GridPos.z)?.IsActive == true;
+        //        if ((hasUp && hasDown) || (hasLeft && hasRight))
+        //        {
+        //            validCandidates.Add(module);
+        //        }
+        //    }
+        //    //TODO: Que haga multiples? Que conecte los dungeons?
+        //    if (validCandidates.Count == 0)
+        //    {
+        //        Debug.Log("No");
+        //        return;
+        //    }
+        //    Module selected = validCandidates[Random.Range(0, validCandidates.Count)];
+        //    selected.SetActive(true);
+        //    availableModules.Remove(selected);
+        //}
     }
 }
