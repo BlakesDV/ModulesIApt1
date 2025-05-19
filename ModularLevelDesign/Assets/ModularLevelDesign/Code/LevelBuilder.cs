@@ -37,6 +37,17 @@ namespace ProceduralLevelDesign
 
     #endregion
 
+    #region Enums
+
+    public enum PreviousCut
+    {
+        VERTICAL,
+        HORIZONTAL,
+        NONE  //FIRST / INITIAL CUT
+    }
+
+    #endregion
+
     public class LevelBuilder : MonoBehaviour, ILevelEditor
     {
         #region Parameters
@@ -53,7 +64,7 @@ namespace ProceduralLevelDesign
 
         [SerializeField] public List<Module> _allModulesInScene;
         [SerializeField] protected Module[,] _bidimentionalGrid;
-        [SerializeField] public List<Module> availableModules = new List<Module>();
+        [SerializeField] public List<Module> availableModules;
         [SerializeField] public List<Module> validCandidates;
 
         #endregion InternalData
@@ -208,7 +219,7 @@ namespace ProceduralLevelDesign
 
         public void CheckNeighbours()
         {
-            Debug.Log("Checking Neighbours");
+            //Debug.Log("Checking Neighbours");
             foreach (Module module in _allModulesInScene)
             {
                 if (module.IsActive)
@@ -219,7 +230,7 @@ namespace ProceduralLevelDesign
         }
 
         //Create void binary space partition
-        public void BinarySpacePartition(Dungeon dungeon)
+        public void BinarySpacePartition(Dungeon dungeon, int previousConnector, PreviousCut previousCutType)
         {
             if (dungeon.Width() > minDungeonX * 2)
             {
@@ -262,9 +273,23 @@ namespace ProceduralLevelDesign
                     }
                 }
 
+                Module connector = null;
                 if (validCandidates.Count > 0)
                 {
-                    Module connector = validCandidates[Random.Range(0, validCandidates.Count)];
+                    if (previousCutType == PreviousCut.VERTICAL)
+                    {
+                        if (validCandidates.Count == 1)
+                        {
+                            return;
+                        }
+                        int randomConnectorPos;
+                        do
+                        {
+                            int randomConnectorIndex = Random.Range(0, validCandidates.Count);
+                            randomConnectorPos = (int)validCandidates[randomConnectorIndex].transform.position.z;
+                        } while (randomConnectorPos == previousConnector);
+                    }
+                    connector = validCandidates[Random.Range(0, validCandidates.Count)];
                     connector.SetActive(true);
                     availableModules.Remove(connector);
                 }
@@ -285,8 +310,8 @@ namespace ProceduralLevelDesign
                     maxY = dungeon.maxY
                 };
 
-                BinarySpacePartition(DungeonA);
-                BinarySpacePartition(DungeonB);
+                BinarySpacePartition(DungeonA, (int)connector.transform.position.z, PreviousCut.HORIZONTAL);
+                BinarySpacePartition(DungeonB, (int)connector.transform.position.z, PreviousCut.HORIZONTAL);
             }
 
             //Cortes en en X sobre eje Y
@@ -311,10 +336,24 @@ namespace ProceduralLevelDesign
                         }
                     }
                 }
-
+                Module connector = null;
                 if (validCandidates.Count > 0)
                 {
-                    Module connector = validCandidates[Random.Range(0, validCandidates.Count)];
+                    if (previousCutType == PreviousCut.HORIZONTAL)
+                    {
+                        if (validCandidates.Count == 1)
+                        {
+                            return;
+                        }
+                        int randomConnectorPos;
+                        do
+                        {
+                            int randomConnectorIndex = Random.Range(0, validCandidates.Count);
+                            randomConnectorPos = (int)validCandidates[randomConnectorIndex].transform.position.x;
+                        } while (randomConnectorPos == previousConnector);
+                        Debug.Log("Sale del while");
+                    }
+                    connector = validCandidates[Random.Range(0, validCandidates.Count)];
                     connector.SetActive(true);
                     availableModules.Remove(connector);
                 }
@@ -335,36 +374,37 @@ namespace ProceduralLevelDesign
                     maxY = dungeon.maxY
                 };
 
-                BinarySpacePartition(DungeonA);
-                BinarySpacePartition(DungeonB);
+                BinarySpacePartition(DungeonA, (int)connector.transform.position.x, PreviousCut.VERTICAL);
+                BinarySpacePartition(DungeonB, (int)connector.transform.position.x, PreviousCut.VERTICAL);
             }
+            //Debug.Log("activa pared");
             CheckNeighbours();
-            //SpawnHall();
         }
-        //public void SpawnHall()
-        //{
-        //    List<Module> validCandidates = new List<Module>();
 
-        //    foreach (Module module in availableModules)
-        //    {
-        //        bool hasUp = GetModuleAt((int)module.GridPos.x, (int)module.GridPos.z + 1)?.IsActive == true;
-        //        bool hasDown = GetModuleAt((int)module.GridPos.x, (int)module.GridPos.z - 1)?.IsActive == true;
-        //        bool hasLeft = GetModuleAt((int)module.GridPos.x - 1, (int)module.GridPos.z)?.IsActive == true;
-        //        bool hasRight = GetModuleAt((int)module.GridPos.x + 1, (int)module.GridPos.z)?.IsActive == true;
-        //        if ((hasUp && hasDown) || (hasLeft && hasRight))
-        //        {
-        //            validCandidates.Add(module);
-        //        }
-        //    }
-        //    //TODO: Que haga multiples? Que conecte los dungeons?
-        //    if (validCandidates.Count == 0)
-        //    {
-        //        Debug.Log("No");
-        //        return;
-        //    }
-        //    Module selected = validCandidates[Random.Range(0, validCandidates.Count)];
-        //    selected.SetActive(true);
-        //    availableModules.Remove(selected);
-        //}
+        public void SpawnHall()
+        {
+            List<Module> validCandidates = new List<Module>();
+
+            foreach (Module module in availableModules)
+            {
+                bool hasUp = GetModuleAt((int)module.GridPos.x, (int)module.GridPos.z + 1)?.IsActive == true;
+                bool hasDown = GetModuleAt((int)module.GridPos.x, (int)module.GridPos.z - 1)?.IsActive == true;
+                bool hasLeft = GetModuleAt((int)module.GridPos.x - 1, (int)module.GridPos.z)?.IsActive == true;
+                bool hasRight = GetModuleAt((int)module.GridPos.x + 1, (int)module.GridPos.z)?.IsActive == true;
+                if ((hasUp && hasDown) || (hasLeft && hasRight))
+                {
+                    validCandidates.Add(module);
+                }
+            }
+            //TODO: Que haga multiples? Que conecte los dungeons?
+            if (validCandidates.Count == 0)
+            {
+                Debug.Log("No");
+                return;
+            }
+            Module selected = validCandidates[Random.Range(0, validCandidates.Count)];
+            selected.SetActive(true);
+            availableModules.Remove(selected);
+        }
     }
 }

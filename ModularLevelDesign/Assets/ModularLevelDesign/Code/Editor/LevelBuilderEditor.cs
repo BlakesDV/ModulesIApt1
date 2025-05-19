@@ -31,7 +31,8 @@ public class LevelBuilderEditor : Editor
                 maxY = _levelBuilder.sizeZ,
             };
 
-            _levelBuilder.BinarySpacePartition(dungeon);
+            _levelBuilder.BinarySpacePartition(dungeon, -1, PreviousCut.NONE);
+            _levelBuilder.CheckNeighbours();
         }
 
         if (GUILayout.Button("Check Neighbours"))
@@ -41,7 +42,7 @@ public class LevelBuilderEditor : Editor
 
         if (GUILayout.Button("Create Hall"))
         {
-            //_levelBuilder.SpawnHall();
+            _levelBuilder.SpawnHall();
         }
 
         if (GUILayout.Button("Delete Modules"))
